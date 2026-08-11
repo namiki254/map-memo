@@ -9,19 +9,20 @@ import { createClient } from "@supabase/supabase-js";
  * 読み出しは process.env ではなく import.meta.env です．
  * AI が NEXT_PUBLIC_ や process.env を使うコードを出してきたら，それは Next.js 用の書き方です．
  *
- * ここで使うのは anon（publishable）キーだけです．
- * service_role（secret）キーは全権限を持つので，絶対にここへ書かないでください．
- *
- * 注意：Supabase のプロジェクトがまだ存在しないため，このファイルは現時点でどこからも
- * import されていません．プロジェクトが用意できたら .env.local を作って使い始めてください．
+ * ここで使うのは publishable キー（sb_publishable_ で始まるもの）だけです．
+ * これはブラウザに埋め込まれる前提の公開キーで，見えても問題ありません．
+ * アクセス制御はデータベース側（RLS）で行います．
+ * secret キー（sb_secret_ で始まるもの）は全権限を持つので，絶対にここへ書かないでください．
  */
 
-const url = import.meta.env.VITE_SUPABASE_URL;
-const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// 末尾のスラッシュは取り除く．管理画面からコピーすると付いてくることがあり，
+// そのままだとリクエスト先のURLにスラッシュが2つ並ぶ．
+const url = import.meta.env.VITE_SUPABASE_URL?.replace(/\/+$/, "");
+const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 if (!url || !key) {
   throw new Error(
-    "Supabase の環境変数が未設定です．.env.local に VITE_SUPABASE_URL と VITE_SUPABASE_ANON_KEY を書いてください．",
+    "Supabase の環境変数が未設定です．.env.local に VITE_SUPABASE_URL と VITE_SUPABASE_PUBLISHABLE_KEY を書いてください．",
   );
 }
 

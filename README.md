@@ -79,7 +79,7 @@ B・C・D・E は地図のコードを読まずに作業できます．A が詰�
 
 `.env.local` はコミットしません．`.gitignore` の `*.local` で除外済みです．
 
-Supabase の `service_role`（secret）キーは，どこにも書かないでください．全権限を持つ鍵です．クライアントで使うのは anon（publishable）キーだけです．
+Supabase の secret キー（`sb_secret_` で始まるもの）は，どこにも書かないでください．全権限を持つ鍵です．クライアントで使うのは publishable キー（`sb_publishable_` で始まるもの）だけです．
 
 **Supabase は1週間アクセスがないとプロジェクトが自動停止します．** お盆期間中，週1回は誰かが開いてください．
 
