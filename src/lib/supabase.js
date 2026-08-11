@@ -1,7 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
 /**
- * Supabase クライアント．
+ * Supabase への接続設定．
+ *
+ * 使い方：
+ *   import { supabase } from "../lib/supabase";
+ *   const { data, error } = await supabase.from("maps").select("*");
  *
  * 環境変数は .env.local に書きます．必要な項目は .env.example を見てください．
  *
@@ -11,8 +15,7 @@ import { createClient } from "@supabase/supabase-js";
  *
  * ここで使うのは publishable キー（sb_publishable_ で始まるもの）だけです．
  * これはブラウザに埋め込まれる前提の公開キーで，見えても問題ありません．
- * アクセス制御はデータベース側（RLS）で行います．
- * secret キー（sb_secret_ で始まるもの）は全権限を持つので，絶対にここへ書かないでください．
+ * secret キー（sb_secret_ で始まるもの）は全権限を持つので，絶対に書かないでください．
  */
 
 // 末尾のスラッシュは取り除く．管理画面からコピーすると付いてくることがあり，

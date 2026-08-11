@@ -1,44 +1,35 @@
 import { MapView } from "./components/MapView";
-import type { MapDoc, Pin } from "./types";
 
 // 動作確認用の仮データ．Supabase に繋いだら消してください．
-const sampleMap: MapDoc = {
-  id: "sample-japan",
-  name: "日本全国",
-  type: "geo",
+const sampleMap = {
+  id: "sample-1",
+  title: "サンプルマップ",
+  description: "セットアップ確認用のダミーデータです",
   image_url: null,
-  width: null,
-  height: null,
-  owner_id: null,
   created_at: "2026-08-11T00:00:00Z",
 };
 
-const samplePins: Pin[] = [
+// x と y は画像に対する割合（0〜1）です．ピクセルではありません．
+const samplePins = [
   {
     id: "pin-1",
-    map_id: "sample-japan",
-    x: 135.5023,
-    y: 34.6937,
-    title: "大阪",
-    body: "ここから市内の地図へ潜る",
-    kind: "link",
-    child_map_id: "sample-osaka",
-    planned_date: "2026-08-30",
-    order_index: 0,
-    visited_at: null,
+    map_id: "sample-1",
+    x: 0.35,
+    y: 0.62,
+    title: "サンプルのピン",
+    content: "画像の左から35%，上から62%の位置",
+    pin_type: "default",
+    created_at: "2026-08-11T00:00:00Z",
   },
   {
     id: "pin-2",
-    map_id: "sample-japan",
-    x: 139.7671,
-    y: 35.6812,
-    title: "東京駅",
-    body: "出発地点",
-    kind: "note",
-    child_map_id: null,
-    planned_date: "2026-08-29",
-    order_index: 0,
-    visited_at: null,
+    map_id: "sample-1",
+    x: 0.7,
+    y: 0.25,
+    title: "もう1つのピン",
+    content: "画像の左から70%，上から25%の位置",
+    pin_type: "default",
+    created_at: "2026-08-11T00:00:00Z",
   },
 ];
 
