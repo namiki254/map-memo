@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.vercel
+.env*
+# .env.example は雛形なのでコミットする（Vercel CLI が .env* を足したときの例外）
+!.env.example
