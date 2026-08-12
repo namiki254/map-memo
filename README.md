@@ -1,4 +1,4 @@
-# map-memo
+# memop
 
 好きな画像を「地図」として使い，その上にピンを立てて情報をみんなで書き込めるWebアプリ．ハッカソン（2026年8月）の制作物．
 
@@ -76,11 +76,11 @@ Node.js はバックエンドとしては使いません．ただし Vite と np
 そのうえで，次を実行します．
 
 ```
-git clone https://github.com/namiki254/map-memo.git
+git clone https://github.com/namiki254/memop.git
 ```
 
 ```
-cd map-memo
+cd memop
 ```
 
 ```
@@ -355,7 +355,7 @@ PRのURLと，何をしたのかを一言添えて投稿します．
 
 ```
 PR出しました
-https://github.com/namiki254/map-memo/pull/15
+https://github.com/namiki254/memop/pull/15
 ピンの詳細パネルを追加しました．レビューお願いします．
 ```
 
