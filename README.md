@@ -39,7 +39,11 @@
 
 セットアップは完了し，Vercelへの自動デプロイも動いています．機能の実装はこれからです．
 
-**動いているURL**：https://map-memo-nami-s-projects6.vercel.app
+**動いているURL**：https://memop-nami-s-projects6.vercel.app
+
+`main` にマージされるたび，このURLが自動で最新に更新されます．**普段はこちらを使ってください．**
+
+短いURL（https://memop-app.vercel.app ）もありますが，こちらは**自動では更新されません．** 手動で張り替えるまで古い内容を表示し続けるので，発表で使う場合は直前に張り替えが必要です．人に口頭で伝えるとき以外は使わない方が安全です．
 
 Supabaseのテーブルとバケットはまだ作成していません．`src/lib/supabase.js` の接続コードは用意済みですが，まだどこからも使っていません．
 
