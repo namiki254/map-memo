@@ -37,7 +37,7 @@ export default function App() {
   return (
     <div className="flex h-screen flex-col">
       <header className="border-b border-slate-200 px-6 py-4">
-        <h1 className="text-xl font-bold text-slate-800">map-memo</h1>
+        <h1 className="text-xl font-bold text-slate-800">memop</h1>
         <p className="text-sm text-slate-500">
           セットアップ確認用の画面です．担当ごとのページができたら差し替えます．
         </p>
