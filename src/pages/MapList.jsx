@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 /**
  * マップ一覧ページ（雛形）．
  *
@@ -21,6 +24,26 @@
  */
 
 export default function MapList() {
+  const [maps, setMaps] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase
+      .from("maps")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (error) console.error(error);
+        setMaps(data ?? []);
+        setLoading(false);
+      });
+  }, []);
+  if (loading) {
+  return <p className="p-6">読み込み中...</p>;
+}
+if (maps.length === 0) {
+  return <p className="p-6">まだマップがありません</p>;
+}
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-slate-800">マップ一覧</h2>
