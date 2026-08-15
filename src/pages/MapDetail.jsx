@@ -1,3 +1,10 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { supabase } from "../lib/supabase";
+import Loading from "../components/Loading";
+import ErrorMessage from "../components/ErrorMessage";
+import { MapView } from "../components/MapView";
+
 /**
  * マップ詳細ページ（雛形）．
  *
@@ -24,9 +31,11 @@
  * MapView の props の形は確定しているので，中身が未実装でも繋ぎ込みは先に進められます．
  */
 
-import { MapView } from "../components/MapView";
-
 export default function MapDetail() {
+  const { id } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   // Supabase から取得するまでの仮データ．繋ぎ込んだら消してください．
   const map = {
     id: "placeholder",
@@ -36,6 +45,38 @@ export default function MapDetail() {
     created_at: "",
   };
 
+  useEffect(() => {
+    async function fetchMapDetail() {
+      setLoading(true);
+      setError(null);
+
+      // Supabase からデータを取得
+      const { error } = await supabase
+        .from("maps")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        setError(error);
+      }
+      setLoading(false);
+    }
+
+    fetchMapDetail();
+  }, [id]);
+
+  // 1. 読み込み中は Loading コンポーネントを表示
+  if (loading) {
+    return <Loading />;
+  }
+
+  // 2. エラー時は ErrorMessage コンポーネントを表示（error.messageを渡す）
+  if (error) {
+    return <ErrorMessage message={error.message} />;
+  }
+
+  // 3. 通常時（元のデザインを完全維持）
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-slate-200 px-6 py-3">

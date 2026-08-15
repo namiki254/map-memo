@@ -1,3 +1,8 @@
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
+import Loading from "../components/Loading";
+import ErrorMessage from "../components/ErrorMessage";
+
 /**
  * マップ一覧ページ（雛形）．
  *
@@ -21,6 +26,40 @@
  */
 
 export default function MapList() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchMaps() {
+      setLoading(true);
+      setError(null);
+
+      // Supabase からデータを取得
+      const { error } = await supabase
+        .from("maps")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        setError(error);
+      }
+      setLoading(false);
+    }
+
+    fetchMaps();
+  }, []);
+
+  // 1. 読み込み中は Loading コンポーネントを表示
+  if (loading) {
+    return <Loading />;
+  }
+
+  // 2. エラー時は ErrorMessage コンポーネントを表示（error.messageを渡す）
+  if (error) {
+    return <ErrorMessage message={error.message} />;
+  }
+
+  // 3. 通常時（元のデザインを完全維持）
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-slate-800">マップ一覧</h2>

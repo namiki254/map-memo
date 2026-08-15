@@ -1,3 +1,8 @@
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
+import Loading from "../components/Loading";
+import ErrorMessage from "../components/ErrorMessage";
+
 /**
  * マップ新規作成ページ（雛形）．
  *
@@ -30,6 +35,37 @@
  */
 
 export default function MapUpload() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function checkStorage() {
+      setLoading(true);
+      setError(null);
+
+      // 初期化チェックとして Storage バケットへのアクセスを確認
+      const { error } = await supabase.storage.from("map-images").list();
+
+      if (error) {
+        setError(error);
+      }
+      setLoading(false);
+    }
+
+    checkStorage();
+  }, []);
+
+  // 1. 読み込み中は Loading コンポーネントを表示
+  if (loading) {
+    return <Loading />;
+  }
+
+  // 2. エラー時は ErrorMessage コンポーネントを表示（error.messageを渡す）
+  if (error) {
+    return <ErrorMessage message={error.message} />;
+  }
+
+  // 3. 通常時（元のデザインを完全維持）
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-slate-800">新しいマップを作る</h2>
