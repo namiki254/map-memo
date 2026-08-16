@@ -4,32 +4,15 @@ import { supabase } from "../lib/supabase";
 import Loading from "../components/Loading";
 import ErrorMessage from "../components/ErrorMessage";
 import { MapView } from "../components/MapView";
-
+import { PinPanel } from "../components/PinPanel";
 
 /**
- * マップ詳細ページ（雛形）．
+ * マップ詳細ページ．
  *
  * URL: /maps/:id
  *
- * ここでやること：
- *   - URL の :id から該当する maps の1行を取得する
- *   - そのマップに紐づく pins を取得する
- *   - MapView に渡して表示する
- *   - ピンをクリックしたら PinPanel を開く
- *   - 画面のどこかに共有用のURLを表示する
- *
- * URL からIDを受け取る方法：
- *   import { useParams } from "react-router-dom";
- *   const { id } = useParams();
- *
- * ピンの取得の例：
- *   const { data } = await supabase
- *     .from("pins")
- *     .select("*")
- *     .eq("map_id", id);
- *
- * このページが，A（地図表示）とB（ピン操作）の成果物を組み立てる場所になります．
- * MapView の props の形は確定しているので，中身が未実装でも繋ぎ込みは先に進められます．
+ * URLのIDからマップとピンを取得して表示し，
+ * 画像をクリックすると新しいピンを作れるようにする．
  */
 
 export default function MapDetail() {
@@ -41,6 +24,13 @@ export default function MapDetail() {
   // 画面の状態
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // パネルに出しているピン．
+  // 既存のピンを見ているときは pins の1件，新しく作るときは { x, y } だけの仮の値．
+  // null のときはパネルを出さない．
+  const [selectedPin, setSelectedPin] = useState(null);
+  const [savingPin, setSavingPin] = useState(false);
+  const [pinError, setPinError] = useState("");
 
   // マップとピンを取得する
   const loadMapDetail = useCallback(async () => {
@@ -56,7 +46,10 @@ export default function MapDetail() {
         .select("*")
         .eq("id", id)
         .maybeSingle();
-      
+
+      // 22P02 はIDの形式が不正なときのエラー．
+      // /maps/abc123 のようにUUIDでない文字列が入ると起きるので，
+      // 「見つからなかった」と同じ扱いにする．
       if (mapError?.code === "22P02") {
         return;
       }
@@ -95,6 +88,63 @@ export default function MapDetail() {
     loadMapDetail();
   }, [loadMapDetail]);
 
+  /** 画像の何もない場所がクリックされた．そこに新しいピンを作る準備をする */
+  function handleMapClick(x, y) {
+    setPinError("");
+    setSelectedPin({ x, y });
+  }
+
+  /** 既にあるピンがクリックされた．中身を表示する */
+  function handlePinClick(pin) {
+    setPinError("");
+    setSelectedPin(pin);
+  }
+
+  function closePanel() {
+    setSelectedPin(null);
+    setPinError("");
+  }
+
+  /** パネルの入力を pins テーブルに保存する */
+  async function handleSavePin({ title, content }) {
+    if (savingPin || !selectedPin) return;
+
+    setSavingPin(true);
+    setPinError("");
+
+    try {
+      const { data: created, error: insertError } = await supabase
+        .from("pins")
+        .insert({
+          map_id: id,
+          x: selectedPin.x,
+          y: selectedPin.y,
+          title,
+          content,
+          pin_type: "default",
+        })
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error("ピンの保存に失敗", insertError);
+        setPinError(`保存に失敗しました．${insertError.message}`);
+        return;
+      }
+
+      // 作られたピンを手元の一覧に足す．
+      // ここで loadMapDetail() を呼び直すと，画面が一度「読み込み中...」に戻って
+      // 地図が消えるので，ピンを1件足すだけのときは呼ばない．
+      setPins((current) => [...current, created]);
+      setSelectedPin(null);
+    } catch (e) {
+      console.error("ピンの保存中に予期しないエラー", e);
+      setPinError(`予期しないエラーが発生しました．${e?.message ?? e}`);
+    } finally {
+      setSavingPin(false);
+    }
+  }
+
   // 1. 読み込み中は Loading コンポーネントを表示
   if (loading) {
     return <Loading />;
@@ -114,20 +164,36 @@ export default function MapDetail() {
     );
   }
 
-  // 3. 通常時（元のデザインを完全維持）
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-slate-200 px-6 py-3">
         <h2 className="text-lg font-bold text-slate-800">{map.title}</h2>
         {map.description && (
-          <p className="mt-1 text-sm text-slate-500">
-            {map.description}
-          </p>
+          <p className="mt-1 text-sm text-slate-500">{map.description}</p>
         )}
+        <p className="mt-1 text-xs text-slate-400">
+          画像をクリックするとピンを立てられます．
+        </p>
       </div>
+
       <div className="min-h-0 flex-1">
-        <MapView map={map} pins={pins} />
+        <MapView
+          map={map}
+          pins={pins}
+          onPinClick={handlePinClick}
+          onMapClick={handleMapClick}
+        />
       </div>
+
+      {selectedPin && (
+        <PinPanel
+          pin={selectedPin}
+          saving={savingPin}
+          error={pinError}
+          onSave={handleSavePin}
+          onClose={closePanel}
+        />
+      )}
     </div>
   );
 }
