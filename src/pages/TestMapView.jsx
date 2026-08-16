@@ -4,8 +4,6 @@
 // サンプルマップ、サンプルピン、サンプルのonPinClick（ピンをクリックしたときの表示）を用意している
 // 最後にMapViewを包んでいる
 
-// どなたかがMapDitail.jsx?を編集するときの参考になれば、、
-
 
 import { MapView } from "../components/MapView.jsx";
 

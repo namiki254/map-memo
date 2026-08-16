@@ -42,7 +42,7 @@
 // スクロールバーを導入せず画像を極限まで縮小して表示する場合（2. ）を作成しました。
 // PR時には（1. ）を採用しています。
 
-// ブラウザ拡大縮小のテストページとして src/pages/TestMapView.jsx も追加しました。
+// ブラウザ拡大縮小のテストページとして src/pages/TestMapView.jsx を追加しました。
 // TestMapView.jsxでも重要な設定がある（らしい、Geminiが言ってた）ので、確認お願いします。
 
 
@@ -190,26 +190,6 @@ export function MapView({ map, pins = [], onPinClick }) {
 //             <span className="text-2xl drop-shadow">📍</span>
 //           </button>
 //         ))}
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-// （元のスクリプト）
-// export function MapView({ map, pins = [] }) {
-//   return (
-//     <div className="grid h-full w-full place-items-center bg-slate-200 text-slate-500">
-//       <div className="text-center">
-//         <p className="text-lg font-bold">地図（未実装）</p>
-//         <p className="mt-2 text-sm">
-//           {map.title} / ピン {pins.length} 件
-//         </p>
 //       </div>
 //     </div>
 //   );
