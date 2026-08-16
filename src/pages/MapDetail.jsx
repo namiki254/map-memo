@@ -56,6 +56,10 @@ export default function MapDetail() {
         .select("*")
         .eq("id", id)
         .maybeSingle();
+      
+      if (mapError?.code === "22P02") {
+        return;
+      }
 
       if (mapError) {
         throw mapError;
