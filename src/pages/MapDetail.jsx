@@ -32,6 +32,9 @@ export default function MapDetail() {
   const [savingPin, setSavingPin] = useState(false);
   const [pinError, setPinError] = useState("");
 
+  // コピー状態を覚える
+  const [copied, setCopied] = useState(false);
+
   // マップとピンを取得する
   const loadMapDetail = useCallback(async () => {
     setLoading(true);
@@ -105,6 +108,13 @@ export default function MapDetail() {
     setPinError("");
   }
 
+  // コピー処理を追加
+  async function copyUrl() {
+    await navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
   /** パネルの入力を pins テーブルに保存する */
   async function handleSavePin({ title, content }) {
     if (savingPin || !selectedPin) return;
@@ -167,7 +177,20 @@ export default function MapDetail() {
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-slate-200 px-6 py-3">
-        <h2 className="text-lg font-bold text-slate-800">{map.title}</h2>
+
+        {/* タイトルとコピーボタンを横並びにするためにflexを使用 */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-slate-800">{map.title}</h2>
+          {/* コピーボタンを追加 */}
+          <button
+            onClick={copyUrl}
+            className="rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200"
+          >
+            {copied ? "コピーしました！" : "このマップのURLをコピー"}
+          </button>
+        </div>
+        {/* ここまで */}
+
         {map.description && (
           <p className="mt-1 text-sm text-slate-500">{map.description}</p>
         )}
