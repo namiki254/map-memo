@@ -90,6 +90,11 @@ export default function MapUpload() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  // プレビューの表示に成功したかどうか．
+  // ファイルの形式とサイズを確認しただけでは，中身が本当に画像かは分からない．
+  // 実際に表示できたことをここで確かめてから，送信を許可する．
+  const [imageReady, setImageReady] = useState(false);
+
   // プレビュー用のURLは，使い終わったら必ず解放する．
   // 放置するとブラウザが画像データを掴んだままになる．
   //
@@ -97,6 +102,8 @@ export default function MapUpload() {
   // 短くなるのでは」と思っても，そうしないこと．
   // その形にすると，前に作ったURLを revokeObjectURL する場所が無くなる．
   useEffect(() => {
+    setImageReady(false);
+
     if (!file) {
       setPreviewUrl(null);
       return;
@@ -235,7 +242,11 @@ export default function MapUpload() {
     }
   }
 
-  const canSubmit = title.trim() !== "" && file !== null && !submitting;
+  // imageReady を条件に入れているのが大事．
+  // これが無いと，壊れた画像を選んだ直後（表示に失敗したと分かる前）に
+  // 送信ボタンを押せてしまい，そのままアップロードされる．
+  const canSubmit =
+    title.trim() !== "" && file !== null && imageReady && !submitting;
 
   return (
     <div className="h-full overflow-auto p-6">
@@ -314,6 +325,7 @@ export default function MapUpload() {
             <img
               src={previewUrl}
               alt="選択した画像のプレビュー"
+              onLoad={() => setImageReady(true)}
               onError={() => {
                 // 拡張子だけ画像に見せかけたファイルや，壊れた画像はここで気づける．
                 // 送信中は，すでにアップロードが始まっているので何もしない．
@@ -343,7 +355,9 @@ export default function MapUpload() {
 
           {!submitting && !canSubmit && (
             <p className="mt-2 text-sm text-slate-500">
-              タイトルと画像の両方を入れると送信できます．
+              {file && !imageReady
+                ? "画像を読み込んでいます．表示できたら送信できます．"
+                : "タイトルと画像の両方を入れると送信できます．"}
             </p>
           )}
         </div>
