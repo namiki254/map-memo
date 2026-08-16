@@ -109,6 +109,7 @@ export default function MapDetail() {
   }
 
   // コピー処理を追加
+  // utrをクリップボードにコピー、2秒経ったらもとに戻す（Issueのコード通り）
   async function copyUrl() {
     await navigator.clipboard.writeText(window.location.href);
     setCopied(true);
@@ -189,7 +190,6 @@ export default function MapDetail() {
             {copied ? "コピーしました！" : "このマップのURLをコピー"}
           </button>
         </div>
-        {/* ここまで */}
 
         {map.description && (
           <p className="mt-1 text-sm text-slate-500">{map.description}</p>
