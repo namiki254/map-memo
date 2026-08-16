@@ -1,31 +1,11 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import Loading from "../components/Loading";
 import ErrorMessage from "../components/ErrorMessage";
 
-/**
- * マップ一覧ページ（雛形）．
- *
- * URL: /
- *
- * ここでやること：
- *   - Supabase の maps テーブルから一覧を取得して並べる
- *   - 「新しいマップを作る」ボタンを置く
- *   - 各マップをクリックしたら /maps/:id へ移動する
- *
- * データの取り方の例：
- *   import { supabase } from "../lib/supabase";
- *   const { data, error } = await supabase
- *     .from("maps")
- *     .select("*")
- *     .order("created_at", { ascending: false });
- *
- * 他のページへ移動したいときは react-router の Link を使います．
- *   import { Link } from "react-router-dom";
- *   <Link to={`/maps/${map.id}`}>{map.title}</Link>
- */
-
 export default function MapList() {
+  const [maps, setMaps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -34,15 +14,18 @@ export default function MapList() {
       setLoading(true);
       setError(null);
 
-      // Supabase からデータを取得
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("maps")
         .select("*")
         .order("created_at", { ascending: false });
 
       if (error) {
         setError(error);
+        setLoading(false);
+        return;
       }
+
+      setMaps(data ?? []);
       setLoading(false);
     }
 
@@ -59,11 +42,41 @@ export default function MapList() {
     return <ErrorMessage message={error.message} />;
   }
 
+  if (maps.length === 0) {
+    return <p className="p-6">まだマップがありません</p>;
+  }
+
   // 3. 通常時（元のデザインを完全維持）
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-slate-800">マップ一覧</h2>
-      <p className="mt-2 text-slate-500">準備中です．</p>
+
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+        {maps.map((map) => (
+          <Link
+            key={map.id}
+            to={`/maps/${map.id}`}
+            className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm"
+          >
+            {map.image_url ? (
+              <img
+                src={map.image_url}
+                alt={map.title}
+                className="h-40 w-full object-cover"
+              />
+            ) : (
+              <div className="h-40 w-full bg-slate-200" />
+            )}
+
+            <div className="p-4">
+              <h3 className="font-bold text-slate-800">{map.title}</h3>
+              <p className="mt-1 text-sm text-slate-500">
+                {map.description}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
