@@ -1,3 +1,5 @@
+import { getPinEmoji } from "../lib/pinTypes";
+
 /**
  * 地図表示コンポーネント．
  *
@@ -14,7 +16,6 @@
  *   x = 0.35, y = 0.62 なら「画像の左から35%，上から62%の位置」という意味．
  *   こうしておくと，画面や画像の大きさが変わってもピンがずれない．
  */
-
 export function MapView({ map, pins = [], onPinClick, onMapClick }) {
   if (!map?.image_url) {
     return (
@@ -92,7 +93,9 @@ export function MapView({ map, pins = [], onPinClick, onMapClick }) {
               className="absolute -translate-x-1/2 -translate-y-full transition-transform hover:scale-125 focus:outline-none"
               title={pin.title}
             >
-              <span className="text-2xl drop-shadow">📍</span>
+              <span className="text-2xl drop-shadow">
+                {getPinEmoji(pin.pin_type)}
+              </span>
             </button>
           ))}
         </div>
