@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PIN_TYPES, getPinEmoji } from "../lib/pinTypes";
 
 /**
  * ピンの入力・表示パネル．
@@ -11,7 +12,7 @@ import { useEffect, useState } from "react";
  *            既にあるピンを見るときは pins テーブルの1行をそのまま渡す（id がある）．
  *   saving   保存中かどうか
  *   error    保存に失敗したときの文言
- *   onSave   { title, content } を受け取って保存する．新規作成のときだけ使う
+ *   onSave   { title, content, pinType } を受け取って保存する．新規作成のときだけ使う
  *   onClose  閉じる
  *
  * id があるかどうかで «表示» と «新規作成» を切り替える．
@@ -22,6 +23,7 @@ export function PinPanel({ pin, saving = false, error = "", onSave, onClose }) {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [pinType, setPinType] = useState(PIN_TYPES[0].value);
 
   // 別のピンを選び直したときに入力欄を作り直す．
   // pin.id が無い（新規作成）ときは座標を鍵にして，
@@ -30,13 +32,14 @@ export function PinPanel({ pin, saving = false, error = "", onSave, onClose }) {
   useEffect(() => {
     setTitle("");
     setContent("");
+    setPinType(PIN_TYPES[0].value);
   }, [key]);
 
   function handleSubmit(event) {
     event.preventDefault();
     if (saving) return;
     if (!title.trim()) return;
-    onSave?.({ title: title.trim(), content: content.trim() });
+    onSave?.({ title: title.trim(), content: content.trim(), pinType });
   }
 
   return (
@@ -81,6 +84,25 @@ export function PinPanel({ pin, saving = false, error = "", onSave, onClose }) {
             className="mt-2 w-full rounded border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-100"
           />
 
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {PIN_TYPES.map((type) => (
+              <button
+                key={type.value}
+                type="button"
+                onClick={() => setPinType(type.value)}
+                disabled={saving}
+                aria-pressed={pinType === type.value}
+                className={`rounded-full border px-2.5 py-1 text-xs disabled:opacity-50 ${
+                  pinType === type.value
+                    ? "border-slate-800 bg-slate-800 text-white"
+                    : "border-slate-300 text-slate-600"
+                }`}
+              >
+                {type.emoji} {type.label}
+              </button>
+            ))}
+          </div>
+
           {error && (
             <p className="mt-2 rounded bg-red-50 p-2 text-sm text-red-700">
               {error}
@@ -104,7 +126,9 @@ export function PinPanel({ pin, saving = false, error = "", onSave, onClose }) {
       ) : (
         <div>
           <div className="flex items-start justify-between gap-3">
-            <p className="font-bold break-words text-slate-800">{pin.title}</p>
+            <p className="font-bold break-words text-slate-800">
+              {getPinEmoji(pin.pin_type)} {pin.title}
+            </p>
             <button
               type="button"
               onClick={onClose}
